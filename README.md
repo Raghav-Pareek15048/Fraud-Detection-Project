@@ -85,9 +85,10 @@ reports/     -> Literature review and final report
 
 ## Team Members
 
-* Member 1
-* Member 2
-* Member 3
+* Raghav Pareek
+* Aryan Gupta
+* Harsh Sinha
+* Ayushi Sinha
 
 ---
 
@@ -115,4 +116,4 @@ reports/     -> Literature review and final report
 
 ## Status
 
-Project Initiated 🚀
+Project Initiated 
