@@ -5,23 +5,25 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
-# Virtual environments
+# Virtual Environments
 venv/
 env/
 .venv/
 
 # Dataset
-creditcard.csv
-data/
+*.csv
 *.zip
+
+# Operating System
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
 
-# OS
-.DS_Store
-Thumbs.db
-
 # Logs
 *.log
+
+# Cache
+.pytest_cache/
