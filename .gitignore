@@ -1,15 +1,27 @@
-# Data
-*.csv
-*.zip
-
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Environments
-.env
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
 venv/
+env/
+.venv/
 
-# Notebooks
-.ipynb_checkpoints
+# Dataset
+creditcard.csv
+data/
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
