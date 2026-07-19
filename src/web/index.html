@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentryFraud | Real-Time Transaction Fraud Detection</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Decorative Elements -->
+    <div class="glass-bg-glow glow-1"></div>
+    <div class="glass-bg-glow glow-2"></div>
+
+    <div class="app-container">
+        
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="brand-text">
+                    <h1>SentryFraud</h1>
+                    <span>Enterprise ML Fraud Prevention</span>
+                </div>
+            </div>
+            <div class="api-status-container">
+                <span class="status-dot disconnected" id="statusDot"></span>
+                <span class="status-text" id="statusText">Connecting to API...</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content Grid -->
+        <main class="dashboard-grid">
+            
+            <!-- LEFT COLUMN: Metrics & Batch Upload -->
+            <div class="grid-left">
+                
+                <!-- Section 1: Dashboard Model Overview -->
+                <section class="card overview-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-chart-line card-icon"></i>
+                        <h2>Model Performance Dashboard</h2>
+                    </div>
+                    <p class="card-desc">Compare the classification performance of evaluated machine learning algorithms.</p>
+                    
+                    <div class="metrics-summary">
+                        <div class="summary-box">
+                            <span class="summary-label">Active Model</span>
+                            <span class="summary-value text-gradient">XGBoost</span>
+                        </div>
+                        <div class="summary-box">
+                            <span class="summary-label">Top PR-AUC</span>
+                            <span class="summary-value text-gradient">85.7%</span>
+                        </div>
+                        <div class="summary-box">
+                            <span class="summary-label">Target F1</span>
+                            <span class="summary-value text-gradient">81.0%</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Section 2: Batch Processing Upload -->
+                <section class="card batch-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-file-csv card-icon"></i>
+                        <h2>Batch Transaction File Processor</h2>
+                    </div>
+                    <p class="card-desc">Drag and drop a CSV transaction file. Records must contain Time, Amount, and V1–V28 PCA features.</p>
+                    
+                    <div class="dropzone" id="csvDropzone">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <p class="upload-text">Drag & drop CSV file here or <span class="highlight">browse</span></p>
+                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                    </div>
+
+                    <!-- Loader (Hidden by default) -->
+                    <div class="batch-loader" id="batchLoader" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Processing transactions through SentryFraud Engine...</p>
+                    </div>
+
+                    <!-- Batch Results Table -->
+                    <div class="batch-results-wrapper" id="batchResultsWrapper" style="display: none;">
+                        <div class="results-table-header">
+                            <h3>Analysis Results</h3>
+                            <button class="btn btn-secondary btn-sm" id="clearBatchBtn">Clear Results</button>
+                        </div>
+                        <div class="table-container">
+                            <table id="resultsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Tx Index</th>
+                                        <th>Time (Sec)</th>
+                                        <th>Amount</th>
+                                        <th>Prediction</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Real-Time Single Predictor -->
+            <div class="grid-right">
+                
+                <section class="card predictor-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-credit-card card-icon"></i>
+                        <h2>Real-Time Transaction Predictor</h2>
+                    </div>
+                    <p class="card-desc">Test manual entries or load one-click preset templates to evaluate transaction legitimacy immediately.</p>
+                    
+                    <!-- Presets Selection -->
+                    <div class="presets-container">
+                        <button class="preset-btn legit" id="presetLegitBtn">
+                            <i class="fa-solid fa-circle-check"></i> Load Legitimate Preset
+                        </button>
+                        <button class="preset-btn fraud" id="presetFraudBtn">
+                            <i class="fa-solid fa-circle-exclamation"></i> Load Suspicious Preset
+                        </button>
+                    </div>
+
+                    <!-- Form for attributes -->
+                    <form id="predictionForm" class="predictor-form">
+                        
+                        <div class="form-row-main">
+                            <div class="input-group">
+                                <label for="inputTime">Time (Seconds)</label>
+                                <input type="number" step="any" id="inputTime" required placeholder="0.0">
+                            </div>
+                            <div class="input-group">
+                                <label for="inputAmount">Amount ($)</label>
+                                <input type="number" step="any" id="inputAmount" required placeholder="10.0">
+                            </div>
+                        </div>
+
+                        <!-- Accordion for V-features -->
+                        <div class="accordion">
+                            <div class="accordion-header" id="accordionHeader">
+                                <span>Advanced PCA Latent Features (V1 - V28)</span>
+                                <i class="fa-solid fa-chevron-down accordion-arrow"></i>
+                            </div>
+                            <div class="accordion-body" id="accordionBody">
+                                <div class="v-features-grid">
+                                    <!-- Generates 28 input fields -->
+                                    <template id="vFeatureTemplate">
+                                        <div class="input-group v-input-group">
+                                            <label class="v-label"></label>
+                                            <input type="number" step="any" class="v-input" required placeholder="0.0">
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                            <i class="fa-solid fa-radar-shield"></i> Run Fraud Evaluation
+                        </button>
+
+                    </form>
+
+                    <!-- Inference Prediction Display (Hidden initially) -->
+                    <div class="prediction-result-card" id="predictionResultCard" style="display: none;">
+                        <div class="result-icon-container" id="resultIconContainer">
+                            <!-- Shield check or Shield alert icon -->
+                        </div>
+                        <div class="result-info">
+                            <h3 id="resultLabel">Legitimate Transaction</h3>
+                            <p class="result-probability">
+                                Probability score: <span id="resultProbText">0.00%</span>
+                            </p>
+                            <div class="confidence-bar-outer">
+                                <div class="confidence-bar-inner" id="resultConfidenceBar"></div>
+                            </div>
+                            <span class="confidence-percentage" id="resultConfidencePercent">Confidence: 99.8%</span>
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+        <footer class="app-footer">
+            <p>Developed with Enterprise Security Standards. Backend Engine powered by Python & XGBoost.</p>
+        </footer>
+
+    </div>
+
+    <!-- Script file -->
+    <script src="app.js"></script>
+</body>
+</html>

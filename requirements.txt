@@ -7,3 +7,7 @@ imbalanced-learn
 xgboost
 joblib
 jupyter
+fastapi
+uvicorn
+pydantic
+python-multipart
